@@ -33,6 +33,11 @@ import (
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/trace"
 	"google.golang.org/grpc"
+
+	"github.com/hypertrace/goagent/config"
+	"github.com/hypertrace/goagent/instrumentation/hypertrace"
+	"github.com/hypertrace/goagent/instrumentation/hypertrace/github.com/gorilla/hypermux"
+	"github.com/hypertrace/goagent/instrumentation/hypertrace/net/hyperhttp"
 )
 
 const (
@@ -94,6 +99,12 @@ func main() {
 	}
 	log.Out = os.Stdout
 
+	cfg := config.LoadFromFile("./config.yml")
+	cfg.ServiceName = config.String("frontend")
+
+	shutdown := hypertrace.Init(cfg)
+	defer shutdown()
+
 	if os.Getenv("DISABLE_TRACING") == "" {
 		log.Info("Tracing enabled.")
 		go initTracing(log)
@@ -131,6 +142,8 @@ func main() {
 	mustConnGRPC(ctx, &svc.adSvcConn, svc.adSvcAddr)
 
 	r := mux.NewRouter()
+	r.Use(hypermux.NewMiddleware())
+
 	r.HandleFunc("/", svc.homeHandler).Methods(http.MethodGet, http.MethodHead)
 	r.HandleFunc("/product/{id}", svc.productHandler).Methods(http.MethodGet, http.MethodHead)
 	r.HandleFunc("/cart", svc.viewCartHandler).Methods(http.MethodGet, http.MethodHead)
