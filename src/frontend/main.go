@@ -37,7 +37,6 @@ import (
 	"github.com/hypertrace/goagent/config"
 	"github.com/hypertrace/goagent/instrumentation/hypertrace"
 	"github.com/hypertrace/goagent/instrumentation/hypertrace/github.com/gorilla/hypermux"
-	"github.com/hypertrace/goagent/instrumentation/hypertrace/net/hyperhttp"
 )
 
 const (
@@ -142,7 +141,7 @@ func main() {
 	mustConnGRPC(ctx, &svc.adSvcConn, svc.adSvcAddr)
 
 	r := mux.NewRouter()
-	r.Use(hypermux.NewMiddleware())
+	r.Use(hypermux.NewMiddleware(nil))
 
 	r.HandleFunc("/", svc.homeHandler).Methods(http.MethodGet, http.MethodHead)
 	r.HandleFunc("/product/{id}", svc.productHandler).Methods(http.MethodGet, http.MethodHead)
