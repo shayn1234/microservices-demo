@@ -17,6 +17,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"net/http"
 	"os"
 	"time"
@@ -98,8 +99,11 @@ func main() {
 	}
 	log.Out = os.Stdout
 
-	cfg := config.LoadFromFile("./config.yml")
+	//cfg := config.LoadFromFile("./config.yml")
+	cfg := config.Load() // load env values
 	cfg.ServiceName = config.String("frontend")
+	cfg.Reporting.Endpoint = &wrapperspb.StringValue{Value: "http://34.125.111.36:9411/api/v2/spans"}
+	cfg.Reporting.Secure = &wrapperspb.BoolValue{Value: false}
 
 	shutdown := hypertrace.Init(cfg)
 	defer shutdown()
