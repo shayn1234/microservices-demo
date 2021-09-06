@@ -102,8 +102,10 @@ func main() {
 	//cfg := config.LoadFromFile("./config.yml")
 	cfg := config.Load() // load env values
 	cfg.ServiceName = config.String("frontend")
-	cfg.Reporting.Endpoint = &wrapperspb.StringValue{Value: "http://34.125.111.36:9411/api/v2/spans"}
+	cfg.Reporting.Endpoint = &wrapperspb.StringValue{Value: "http://192.168.5.66:9411/api/v2/spans"}
 	cfg.Reporting.Secure = &wrapperspb.BoolValue{Value: false}
+	cfg.DataCapture.HttpBody.Response = &wrapperspb.BoolValue{Value: true}
+	cfg.DataCapture.BodyMaxSizeBytes = &wrapperspb.Int32Value{Value: 10_000_000}
 
 	shutdown := hypertrace.Init(cfg)
 	defer shutdown()
