@@ -104,8 +104,7 @@ func main() {
 	cfg.ServiceName = config.String("frontend")
 	cfg.Reporting.Endpoint = &wrapperspb.StringValue{Value: "http://192.168.5.66:9411/api/v2/spans"}
 	cfg.Reporting.Secure = &wrapperspb.BoolValue{Value: false}
-	cfg.DataCapture.HttpBody.Response = &wrapperspb.BoolValue{Value: true}
-	cfg.DataCapture.BodyMaxSizeBytes = &wrapperspb.Int32Value{Value: 10_000_000}
+	//cfg.DataCapture.BodyMaxSizeBytes = &wrapperspb.Int32Value{Value: 10_000_000}
 
 	shutdown := hypertrace.Init(cfg)
 	defer shutdown()
@@ -148,6 +147,7 @@ func main() {
 
 	r := mux.NewRouter()
 	r.Use(hypermux.NewMiddleware(nil))
+	r.Use(HyperTracePatchMiddleware)
 
 	r.HandleFunc("/", svc.homeHandler).Methods(http.MethodGet, http.MethodHead)
 	r.HandleFunc("/product/{id}", svc.productHandler).Methods(http.MethodGet, http.MethodHead)
