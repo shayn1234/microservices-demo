@@ -98,7 +98,7 @@ if __name__ == "__main__":
         raise KeyError()
       else:
         logger.info("Profiler enabled.")
-        initStackdriverProfiling()
+#         initStackdriverProfiling()
     except KeyError:
         logger.info("Profiler disabled.")
 
@@ -119,22 +119,22 @@ if __name__ == "__main__":
         logger.warn(f"Exception on Cloud Trace setup: {traceback.format_exc()}, tracing disabled.") 
         tracer_interceptor = server_interceptor.OpenCensusServerInterceptor()
    
-    try:
-      if "DISABLE_DEBUGGER" in os.environ:
-        raise KeyError()
-      else:
-        logger.info("Debugger enabled.")
-        try:
-          googleclouddebugger.enable(
-              module='recommendationserver',
-              version='1.0.0'
-          )
-        except (Exception, DefaultCredentialsError):
-            logger.error("Could not enable debugger")
-            logger.error(traceback.print_exc())
-            pass
-    except (Exception, DefaultCredentialsError):
-        logger.info("Debugger disabled.")
+#     try:
+#       if "DISABLE_DEBUGGER" in os.environ:
+#         raise KeyError()
+#       else:
+#         logger.info("Debugger enabled.")
+#         try:
+#           googleclouddebugger.enable(
+#               module='recommendationserver',
+#               version='1.0.0'
+#           )
+#         except (Exception, DefaultCredentialsError):
+#             logger.error("Could not enable debugger")
+#             logger.error(traceback.print_exc())
+#             pass
+#     except (Exception, DefaultCredentialsError):
+#         logger.info("Debugger disabled.")
 
     port = os.environ.get('PORT', "8080")
     catalog_addr = os.environ.get('PRODUCT_CATALOG_SERVICE_ADDR', '')

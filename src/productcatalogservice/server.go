@@ -19,6 +19,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	pb "github.com/GoogleCloudPlatform/microservices-demo/src/productcatalogservice/genproto"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"io/ioutil"
 	"net"
 	"os"
@@ -27,9 +30,6 @@ import (
 	"sync"
 	"syscall"
 	"time"
-
-	pb "github.com/GoogleCloudPlatform/microservices-demo/src/productcatalogservice/genproto"
-	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 
 	"cloud.google.com/go/profiler"
 	"contrib.go.opencensus.io/exporter/jaeger"
@@ -43,6 +43,10 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/hypertrace/goagent/config"
+	"github.com/hypertrace/goagent/instrumentation/hypertrace"
+	"github.com/hypertrace/goagent/instrumentation/hypertrace/google.golang.org/hypergrpc"
 )
 
 var (
@@ -91,6 +95,18 @@ func main() {
 
 	flag.Parse()
 
+	var zipkin string
+	zipkin = os.Getenv("ZIPKIN_SERVICE_ADDR")
+
+	//cfg := config.LoadFromFile("./config.yml")
+	cfg := config.Load() // load env values
+	cfg.ServiceName = config.String("productcatalogservice")
+	cfg.Reporting.Endpoint = &wrapperspb.StringValue{Value: "http://" + zipkin + "/api/v2/spans"}
+	cfg.Reporting.Secure = &wrapperspb.BoolValue{Value: false}
+
+	shutdown := hypertrace.Init(cfg)
+	defer shutdown()
+
 	// set injected latency
 	if s := os.Getenv("EXTRA_LATENCY"); s != "" {
 		v, err := time.ParseDuration(s)
@@ -135,10 +151,15 @@ func run(port string) string {
 	var srv *grpc.Server
 	if os.Getenv("DISABLE_STATS") == "" {
 		log.Info("Stats enabled.")
-		srv = grpc.NewServer(grpc.StatsHandler(&ocgrpc.ServerHandler{}))
+		srv = grpc.NewServer(
+			grpc.StatsHandler(&ocgrpc.ServerHandler{}),
+			grpc.UnaryInterceptor(hypergrpc.UnaryServerInterceptor(nil)),
+		)
 	} else {
 		log.Info("Stats disabled.")
-		srv = grpc.NewServer()
+		srv = grpc.NewServer(
+			grpc.UnaryInterceptor(hypergrpc.UnaryServerInterceptor(nil)),
+		)
 	}
 
 	svc := &productCatalog{}

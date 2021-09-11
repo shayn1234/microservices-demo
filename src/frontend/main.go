@@ -98,11 +98,13 @@ func main() {
 		TimestampFormat: time.RFC3339Nano,
 	}
 	log.Out = os.Stdout
+	var zipkin string
+	zipkin = os.Getenv("ZIPKIN_SERVICE_ADDR")
 
 	//cfg := config.LoadFromFile("./config.yml")
 	cfg := config.Load() // load env values
 	cfg.ServiceName = config.String("frontend")
-	cfg.Reporting.Endpoint = &wrapperspb.StringValue{Value: "http://192.168.5.66:9411/api/v2/spans"}
+	cfg.Reporting.Endpoint = &wrapperspb.StringValue{Value: "http://" + zipkin + "/api/v2/spans"}
 	cfg.Reporting.Secure = &wrapperspb.BoolValue{Value: false}
 	//cfg.DataCapture.BodyMaxSizeBytes = &wrapperspb.Int32Value{Value: 10_000_000}
 

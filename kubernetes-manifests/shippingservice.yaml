@@ -42,6 +42,8 @@ spec:
         #   value: "1"
         # - name: JAEGER_SERVICE_ADDR
         #   value: "jaeger-collector:14268"
+        - name: ZIPKIN_SERVICE_ADDR
+          value: "192.168.1.40:9411"
         readinessProbe:
           periodSeconds: 5
           exec:
