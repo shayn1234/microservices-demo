@@ -103,7 +103,7 @@ func main() {
 
 	//cfg := config.LoadFromFile("./config.yml")
 	cfg := config.Load() // load env values
-	cfg.ServiceName = config.String("frontend")
+	cfg.ServiceName = config.String("Frontend")
 	cfg.Reporting.Endpoint = &wrapperspb.StringValue{Value: "http://" + zipkin + "/api/v2/spans"}
 	cfg.Reporting.Secure = &wrapperspb.BoolValue{Value: false}
 	//cfg.DataCapture.BodyMaxSizeBytes = &wrapperspb.Int32Value{Value: 10_000_000}

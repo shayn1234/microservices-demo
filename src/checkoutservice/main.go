@@ -17,6 +17,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"net"
 	"os"
 	"time"
@@ -36,6 +37,10 @@ import (
 	pb "github.com/GoogleCloudPlatform/microservices-demo/src/checkoutservice/genproto"
 	money "github.com/GoogleCloudPlatform/microservices-demo/src/checkoutservice/money"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+
+	"github.com/hypertrace/goagent/config"
+	"github.com/hypertrace/goagent/instrumentation/hypertrace"
+	"github.com/hypertrace/goagent/instrumentation/hypertrace/google.golang.org/hypergrpc"
 )
 
 const (
@@ -83,6 +88,19 @@ func main() {
 		log.Info("Profiling disabled.")
 	}
 
+	var zipkin string
+	zipkin = os.Getenv("ZIPKIN_SERVICE_ADDR")
+
+	//cfg := config.LoadFromFile("./config.yml")
+	cfg := config.Load() // load env values
+	cfg.ServiceName = config.String("Checkout")
+	cfg.Reporting.Endpoint = &wrapperspb.StringValue{Value: "http://" + zipkin + "/api/v2/spans"}
+	cfg.Reporting.Secure = &wrapperspb.BoolValue{Value: false}
+	//cfg.DataCapture.BodyMaxSizeBytes = &wrapperspb.Int32Value{Value: 10_000_000}
+
+	shutdown := hypertrace.Init(cfg)
+	defer shutdown()
+
 	port := listenPort
 	if os.Getenv("PORT") != "" {
 		port = os.Getenv("PORT")
@@ -106,10 +124,15 @@ func main() {
 	var srv *grpc.Server
 	if os.Getenv("DISABLE_STATS") == "" {
 		log.Info("Stats enabled.")
-		srv = grpc.NewServer(grpc.StatsHandler(&ocgrpc.ServerHandler{}))
+		srv = grpc.NewServer(
+			grpc.StatsHandler(&ocgrpc.ServerHandler{}),
+			grpc.UnaryInterceptor(hypergrpc.UnaryServerInterceptor(nil)),
+		)
 	} else {
 		log.Info("Stats disabled.")
-		srv = grpc.NewServer()
+		srv = grpc.NewServer(
+			grpc.UnaryInterceptor(hypergrpc.UnaryServerInterceptor(nil)),
+		)
 	}
 	pb.RegisterCheckoutServiceServer(srv, svc)
 	healthpb.RegisterHealthServer(srv, svc)
