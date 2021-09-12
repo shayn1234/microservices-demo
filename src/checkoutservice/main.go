@@ -324,7 +324,9 @@ func (cs *checkoutService) prepareOrderItemsAndShippingQuoteFromCart(ctx context
 func (cs *checkoutService) quoteShipping(ctx context.Context, address *pb.Address, items []*pb.CartItem) (*pb.Money, error) {
 	conn, err := grpc.DialContext(ctx, cs.shippingSvcAddr,
 		grpc.WithInsecure(),
-		grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
+		grpc.WithStatsHandler(&ocgrpc.ClientHandler{}),
+		grpc.WithUnaryInterceptor(hypergrpc.UnaryClientInterceptor()),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("could not connect shipping service: %+v", err)
 	}
@@ -370,7 +372,9 @@ func (cs *checkoutService) emptyUserCart(ctx context.Context, userID string) err
 func (cs *checkoutService) prepOrderItems(ctx context.Context, items []*pb.CartItem, userCurrency string) ([]*pb.OrderItem, error) {
 	out := make([]*pb.OrderItem, len(items))
 
-	conn, err := grpc.DialContext(ctx, cs.productCatalogSvcAddr, grpc.WithInsecure(), grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
+	conn, err := grpc.DialContext(ctx, cs.productCatalogSvcAddr, grpc.WithInsecure(), grpc.WithStatsHandler(&ocgrpc.ClientHandler{}),
+		grpc.WithUnaryInterceptor(hypergrpc.UnaryClientInterceptor()),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("could not connect product catalog service: %+v", err)
 	}
@@ -425,7 +429,9 @@ func (cs *checkoutService) chargeCard(ctx context.Context, amount *pb.Money, pay
 }
 
 func (cs *checkoutService) sendOrderConfirmation(ctx context.Context, email string, order *pb.OrderResult) error {
-	conn, err := grpc.DialContext(ctx, cs.emailSvcAddr, grpc.WithInsecure(), grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
+	conn, err := grpc.DialContext(ctx, cs.emailSvcAddr, grpc.WithInsecure(), grpc.WithStatsHandler(&ocgrpc.ClientHandler{}),
+		grpc.WithUnaryInterceptor(hypergrpc.UnaryClientInterceptor()),
+	)
 	if err != nil {
 		return fmt.Errorf("failed to connect email service: %+v", err)
 	}
@@ -437,7 +443,9 @@ func (cs *checkoutService) sendOrderConfirmation(ctx context.Context, email stri
 }
 
 func (cs *checkoutService) shipOrder(ctx context.Context, address *pb.Address, items []*pb.CartItem) (string, error) {
-	conn, err := grpc.DialContext(ctx, cs.shippingSvcAddr, grpc.WithInsecure(), grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
+	conn, err := grpc.DialContext(ctx, cs.shippingSvcAddr, grpc.WithInsecure(), grpc.WithStatsHandler(&ocgrpc.ClientHandler{}),
+		grpc.WithUnaryInterceptor(hypergrpc.UnaryClientInterceptor()),
+	)
 	if err != nil {
 		return "", fmt.Errorf("failed to connect email service: %+v", err)
 	}
