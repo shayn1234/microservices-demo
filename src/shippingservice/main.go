@@ -71,7 +71,7 @@ func main() {
 
 	if os.Getenv("DISABLE_PROFILER") == "" {
 		log.Info("Profiling enabled.")
-		go initProfiling("shippingservice", "1.0.0")
+		go initProfiling("Shipping", "1.0.0")
 	} else {
 		log.Info("Profiling disabled.")
 	}
