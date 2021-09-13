@@ -24,12 +24,22 @@ RUN apt-get -qq update \
 # get packages
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+RUN pip install hypertrace-agent
+RUN pip install flask
+RUN pip install mysql-connector-python
 
 FROM base as final
 # Enable unbuffered logging
 ENV PYTHONUNBUFFERED=1
 # Enable Profiler
 ENV ENABLE_PROFILER=1
+
+ENV HT_REPORTING_TRACE_REPORTER_TYPE=zipkin
+ENV HT_REPORTING_ENDPOINT=http://192.168.1.40:9411/api/v2/spans
+ENV HT_SERVICE_NAME=email
+#ENV HT_ENABLE_CONSOLE_SPAN_EXPORTER=True
+ENV HT_LOG_LEVEL=DEBUG
+
 
 RUN apt-get -qq update \
     && apt-get install -y --no-install-recommends \

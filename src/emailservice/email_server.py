@@ -35,6 +35,9 @@ from opencensus.ext.grpc import server_interceptor
 from opencensus.common.transports.async_ import AsyncTransport
 from opencensus.trace import samplers
 
+from hypertrace.agent import Agent
+from hypertrace.agent.config import config_pb2 as hypertrace_config
+
 # import googleclouddebugger
 import googlecloudprofiler
 
@@ -123,8 +126,25 @@ class HealthCheck():
       status=health_pb2.HealthCheckResponse.SERVING)
 
 def start(dummy_mode):
-  server = grpc.server(futures.ThreadPoolExecutor(max_workers=10),
-                       interceptors=(tracer_interceptor,))
+
+  zipkin = os.environ.get('ZIPKIN_SERVICE_ADDR')
+
+
+  agent = Agent() # initialize the agent
+
+  # with agent.edit_config() as config:
+  #   config.service_name = "email"
+    # config.reporting.endpoint = zipkin
+    # config.reporting.trace_reporter_type = 'zipkin'
+    # config.data_capture.rpc_body.request.value = True
+    # config.data_capture.rpc_body.response.value = True
+
+
+  # Instrument libraries that are used within your application
+  agent.register_grpc_server()    # instrument a grpc server
+
+  server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+                       # interceptors=(tracer_interceptor,))
   service = None
   if dummy_mode:
     service = DummyEmailService()
@@ -179,26 +199,26 @@ if __name__ == '__main__':
       raise KeyError()
     else:
       logger.info("Profiler enabled.")
-      initStackdriverProfiling()
+      # initStackdriverProfiling()
   except KeyError:
       logger.info("Profiler disabled.")
 
-  # Tracing
-  try:
-    if "DISABLE_TRACING" in os.environ:
-      raise KeyError()
-    else:
-      logger.info("Tracing enabled.")
-      sampler = samplers.AlwaysOnSampler()
-      exporter = stackdriver_exporter.StackdriverExporter(
-        project_id=os.environ.get('GCP_PROJECT_ID'),
-        transport=AsyncTransport)
-      tracer_interceptor = server_interceptor.OpenCensusServerInterceptor(sampler, exporter)
-  except (KeyError, DefaultCredentialsError):
-      logger.info("Tracing disabled.")
-      tracer_interceptor = server_interceptor.OpenCensusServerInterceptor()
-  except Exception as e:
-      logger.warn(f"Exception on Cloud Trace setup: {traceback.format_exc()}, tracing disabled.") 
-      tracer_interceptor = server_interceptor.OpenCensusServerInterceptor()
-  
+  # # Tracing
+  # try:
+  #   if "DISABLE_TRACING" in os.environ:
+  #     raise KeyError()
+  #   else:
+  #     logger.info("Tracing enabled.")
+  #     sampler = samplers.AlwaysOnSampler()
+  #     exporter = stackdriver_exporter.StackdriverExporter(
+  #       project_id=os.environ.get('GCP_PROJECT_ID'),
+  #       transport=AsyncTransport)
+  #     tracer_interceptor = server_interceptor.OpenCensusServerInterceptor(sampler, exporter)
+  # except (KeyError, DefaultCredentialsError):
+  #     logger.info("Tracing disabled.")
+  #     tracer_interceptor = server_interceptor.OpenCensusServerInterceptor()
+  # except Exception as e:
+  #     logger.warn(f"Exception on Cloud Trace setup: {traceback.format_exc()}, tracing disabled.")
+  #     tracer_interceptor = server_interceptor.OpenCensusServerInterceptor()
+  #
   start(dummy_mode = True)
