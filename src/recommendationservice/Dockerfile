@@ -16,6 +16,8 @@ FROM python:3.7-slim
 RUN apt-get update -qqy && \
 	apt-get -qqy install wget g++ && \
 	rm -rf /var/lib/apt/lists/*
+
+
 # show python logs as they occur
 ENV PYTHONUNBUFFERED=0
 
@@ -28,6 +30,10 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.3.6 && \
 WORKDIR /recommendationservice
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
+RUN pip install opentelemetry-instrumentation
+RUN pip install opentelemetry-instrumentation-grpc
+RUN pip install opentelemetry-exporter-zipkin
+
 
 # add files into working directory
 COPY . .
@@ -36,4 +42,8 @@ COPY . .
 ENV PORT "8080"
 EXPOSE 8080
 
-ENTRYPOINT ["python", "/recommendationservice/recommendation_server.py"]
+ENV OTEL_TRACES_EXPORTER=zipkin_json
+ENV OTEL_EXPORTER_OTLP_ENDPOINT="http://192.168.1.40:9411/api/v2/spans"
+ENV OTEL_RESOURCE_ATTRIBUTES="service.name=recommendation-service"
+
+ENTRYPOINT ["opentelemetry-instrument", "python", "/recommendationservice/recommendation_server.py"]
