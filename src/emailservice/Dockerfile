@@ -24,9 +24,13 @@ RUN apt-get -qq update \
 # get packages
 COPY requirements.txt .
 RUN pip install -r requirements.txt
-RUN pip install hypertrace-agent
-RUN pip install flask
-RUN pip install mysql-connector-python
+RUN pip install opentelemetry-instrumentation
+RUN pip install opentelemetry-instrumentation-grpc
+RUN pip install opentelemetry-exporter-zipkin
+
+#RUN pip install hypertrace-agent
+#RUN pip install flask
+#RUN pip install mysql-connector-python
 
 FROM base as final
 # Enable unbuffered logging
@@ -34,11 +38,11 @@ ENV PYTHONUNBUFFERED=1
 # Enable Profiler
 ENV ENABLE_PROFILER=1
 
-ENV HT_REPORTING_TRACE_REPORTER_TYPE=zipkin
-ENV HT_REPORTING_ENDPOINT=http://192.168.1.40:9411/api/v2/spans
-ENV HT_SERVICE_NAME=email
+#ENV HT_REPORTING_TRACE_REPORTER_TYPE=zipkin
+#ENV HT_REPORTING_ENDPOINT=http://192.168.1.40:9411/api/v2/spans
+#ENV HT_SERVICE_NAME=email
 #ENV HT_ENABLE_CONSOLE_SPAN_EXPORTER=True
-ENV HT_LOG_LEVEL=DEBUG
+#ENV HT_LOG_LEVEL=DEBUG
 
 
 RUN apt-get -qq update \
@@ -54,9 +58,13 @@ WORKDIR /email_server
 
 # Grab packages from builder
 COPY --from=builder /usr/local/lib/python3.7/ /usr/local/lib/python3.7/
+COPY --from=builder /usr/local/bin/opentelemetry-instrument /usr/local/bin/opentelemetry-instrument
 
 # Add the application
 COPY . .
 
+ENV OTEL_TRACES_EXPORTER=zipkin_json
+ENV OTEL_EXPORTER_OTLP_ENDPOINT="http://192.168.1.40:9411/api/v2/spans"
+ENV OTEL_RESOURCE_ATTRIBUTES="service.name=email-service"
 EXPOSE 8080
-ENTRYPOINT [ "python", "email_server.py" ]
+ENTRYPOINT [ "/usr/local/bin/opentelemetry-instrument", "python", "email_server.py" ]

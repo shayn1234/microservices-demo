@@ -30,13 +30,22 @@ import demo_pb2_grpc
 from grpc_health.v1 import health_pb2
 from grpc_health.v1 import health_pb2_grpc
 
+from opentelemetry import trace
+from opentelemetry.instrumentation.grpc import GrpcInstrumentorServer
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.exporter.zipkin.json import ZipkinExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+
+
+
 from opencensus.ext.stackdriver import trace_exporter as stackdriver_exporter
 from opencensus.ext.grpc import server_interceptor
 from opencensus.common.transports.async_ import AsyncTransport
 from opencensus.trace import samplers
 
-from hypertrace.agent import Agent
-from hypertrace.agent.config import config_pb2 as hypertrace_config
+# from hypertrace.agent import Agent
+# from hypertrace.agent.config import config_pb2 as hypertrace_config 
 
 # import googleclouddebugger
 import googlecloudprofiler
@@ -127,10 +136,38 @@ class HealthCheck():
 
 def start(dummy_mode):
 
-  zipkin = os.environ.get('ZIPKIN_SERVICE_ADDR')
+
+  trace.set_tracer_provider(TracerProvider())
+
+  tracer = trace.get_tracer(__name__)
 
 
-  agent = Agent() # initialize the agent
+  # create a ZipkinExporter
+  zipkin_exporter = ZipkinExporter(
+  # version=Protocol.V2
+  # optional:
+  endpoint="http://192.168.1.40:9411/api/v2/spans",
+  # local_node_ipv4="192.168.0.1",
+  # local_node_ipv6="2001:db8::c001",
+  # local_node_port=31313,
+  # max_tag_value_length=256
+  # timeout=5 (in seconds)
+  )
+
+  # Create a BatchSpanProcessor and add the exporter to it
+  span_processor = BatchSpanProcessor(zipkin_exporter)
+
+  # add to the tracer
+  trace.get_tracer_provider().add_span_processor(span_processor)
+
+  grpc_server_instrumentor = GrpcInstrumentorServer()
+  grpc_server_instrumentor.instrument()
+
+
+  # zipkin = os.environ.get('ZIPKIN_SERVICE_ADDR')
+
+
+#  agent = Agent() # initialize the agent
 
   # with agent.edit_config() as config:
   #   config.service_name = "email"
@@ -141,7 +178,7 @@ def start(dummy_mode):
 
 
   # Instrument libraries that are used within your application
-  agent.register_grpc_server()    # instrument a grpc server
+ # agent.register_grpc_server()    # instrument a grpc server
 
   server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
                        # interceptors=(tracer_interceptor,))
