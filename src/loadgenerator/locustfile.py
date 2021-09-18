@@ -70,12 +70,12 @@ class UserBehavior(TaskSet):
         index(self)
 
     tasks = {
-        index: 1,
-        setCurrency: 2,
-        browseProduct: 10,
-        addToCart: 2,
-        viewCart: 3,
-        checkout: 1
+        # index: 1,
+        # setCurrency: 2,
+        # browseProduct: 10,
+        # addToCart: 2,
+        # viewCart: 3,
+        # checkout: 1
     }
 
 class WebsiteUser(HttpUser):
