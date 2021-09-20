@@ -52,7 +52,7 @@ def addToCart(l):
 def checkout(l):
     addToCart(l)
     l.client.post("/cart/checkout", {
-        'email': 'someone@example.com',
+        'email': 'john.smith@aol.com',
         'street_address': '1600 Amphitheatre Parkway',
         'zip_code': '94043',
         'city': 'Mountain View',
