@@ -30,27 +30,31 @@ ext {
 }
 
 dependencies {
+    compile "org.slf4j:slf4j-simple:1.7.9"
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
     if (speed) {
         implementation fileTree(dir: offlineCompile, include: '*.jar')
     } else {
+//        compile "org.slf4j:slf4j-simple:1.7.9"
         implementation "com.google.api.grpc:proto-google-common-protos:1.18.1",
-                "io.opencensus:opencensus-api:${opencensusVersion}",
-                "io.opencensus:opencensus-contrib-grpc-metrics:${opencensusVersion}",
-                "io.opencensus:opencensus-contrib-grpc-util:${opencensusVersion}",
-                "io.opencensus:opencensus-exporter-trace-jaeger:${opencensusVersion}",
-                "io.opencensus:opencensus-exporter-stats-stackdriver:${opencensusVersion}",
-                "io.opencensus:opencensus-exporter-trace-stackdriver:${opencensusVersion}",
-                "io.opencensus:opencensus-exporter-trace-logging:${opencensusVersion}",
+//                "io.opencensus:opencensus-api:${opencensusVersion}",
+//                "io.opencensus:opencensus-contrib-grpc-metrics:${opencensusVersion}",
+//                "io.opencensus:opencensus-contrib-grpc-util:${opencensusVersion}",
+//                "io.opencensus:opencensus-exporter-trace-jaeger:${opencensusVersion}",
+//                "io.opencensus:opencensus-exporter-stats-stackdriver:${opencensusVersion}",
+//                "io.opencensus:opencensus-exporter-trace-stackdriver:${opencensusVersion}",
+//                "io.opencensus:opencensus-exporter-trace-logging:${opencensusVersion}",
                 "io.grpc:grpc-protobuf:${grpcVersion}",
                 "io.grpc:grpc-stub:${grpcVersion}",
                 "io.grpc:grpc-netty:${grpcVersion}",
                 "io.grpc:grpc-services:${grpcVersion}",
                 "org.apache.logging.log4j:log4j-core:2.13.3"
 
+
         runtimeOnly "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}",
                 "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}",
-                "io.opencensus:opencensus-contrib-log-correlation-log4j2:${opencensusVersion}",
-                "io.opencensus:opencensus-impl:${opencensusVersion}",
+//                "io.opencensus:opencensus-contrib-log-correlation-log4j2:${opencensusVersion}",
+//                "io.opencensus:opencensus-impl:${opencensusVersion}",
                 "io.netty:netty-tcnative-boringssl-static:2.0.34.Final"
     }
 }
@@ -103,9 +107,9 @@ task adService(type: CreateStartScripts) {
     applicationName = 'AdService'
     outputDir = new File(project.buildDir, 'tmp')
     classpath = startScripts.classpath
-    defaultJvmOpts =
-            ["-Dlog4j2.contextDataInjector=io.opencensus.contrib.logcorrelation.log4j2.OpenCensusTraceContextDataInjector",
-             "-agentpath:/opt/cprof/profiler_java_agent.so=-cprof_service=adservice,-cprof_service_version=1.0.0"]
+    defaultJvmOpts = []
+//            ["-Dlog4j2.contextDataInjector=io.opencensus.contrib.logcorrelation.log4j2.OpenCensusTraceContextDataInjector",
+//             "-agentpath:/opt/cprof/profiler_java_agent.so=-cprof_service=adservice,-cprof_service_version=1.0.0"]
 }
 
 task adServiceClient(type: CreateStartScripts) {
@@ -113,9 +117,9 @@ task adServiceClient(type: CreateStartScripts) {
     applicationName = 'AdServiceClient'
     outputDir = new File(project.buildDir, 'tmp')
     classpath = startScripts.classpath
-    defaultJvmOpts =
-            ["-Dlog4j2.contextDataInjector=io.opencensus.contrib.logcorrelation.log4j2.OpenCensusTraceContextDataInjector",
-             "-agentpath:/opt/cprof/profiler_java_agent.so=-cprof_service=adserviceclient,-cprof_service_version=1.0.0"]
+    defaultJvmOpts = []
+//            ["-Dlog4j2.contextDataInjector=io.opencensus.contrib.logcorrelation.log4j2.OpenCensusTraceContextDataInjector",
+//             "-agentpath:/opt/cprof/profiler_java_agent.so=-cprof_service=adserviceclient,-cprof_service_version=1.0.0"]
 }
 
 applicationDistribution.into('bin') {

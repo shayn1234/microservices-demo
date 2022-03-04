@@ -1,0 +1,2 @@
+FRONTEND_HOST_PORT=`minikube service list| grep http | awk '{print$8}' | tr '/' " " | awk '{print$2}'`
+curl "http://$FRONTEND_HOST_PORT/cart"   -H 'Upgrade-Insecure-Requests: 1'   -H 'Content-Type: application/x-www-form-urlencoded'   -H 'User-Agent: cURL by hacker'   -H 'Cookie: shop_session-id=37d0f20f-dd54-4456-8fd0-35f764b3cb75; shop_currency=GBP'   --data-raw 'product_id=66VCHSJNUP&quantity=1&EXTRA_PROPERTY=EXTRA_VALUE'

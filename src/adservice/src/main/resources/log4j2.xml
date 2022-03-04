@@ -33,6 +33,11 @@
      </JsonLayout>
 
     </Console>
+    <File name="MyFile" fileName="/app.log">
+      <PatternLayout>
+        <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+      </PatternLayout>
+    </File>
   </Appenders>
   <Loggers>
     <Logger name="io.grpc.netty" level="INFO"/>
@@ -40,6 +45,7 @@
     <Logger name="sun.net" level="INFO"/>
     <Root level="TRACE">
       <AppenderRef ref="STDOUT"/>
+      <AppenderRef ref="MyFile"/>
     </Root>
   </Loggers>
 </Configuration>
