@@ -1,3 +1,20 @@
+# Start boutique without xyz-agent:
+
+In the whole project, replace the IP `192.168.5.66` to your local machine's IP, and then:
+```shell
+(
+  set -ex
+  minikube start
+  skaffold delete
+  skaffold run
+  ./OPEN-BOUTIQUE-IN-BROWSER.sh
+  echo "=== OK ==="
+)
+```
+
+
+
+
 <p align="center">
 <img src="src/frontend/static/icons/Hipster_HeroLogoCyan.svg" width="300" alt="Online Boutique" />
 </p>
