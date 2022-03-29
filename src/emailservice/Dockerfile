@@ -65,6 +65,6 @@ COPY . .
 
 ENV OTEL_TRACES_EXPORTER=zipkin_json
 ENV OTEL_EXPORTER_OTLP_ENDPOINT="http://192.168.5.66:9411/api/v2/spans"
-ENV OTEL_RESOURCE_ATTRIBUTES="service.name=email-service"
+ENV OTEL_RESOURCE_ATTRIBUTES="service.name=emailservice"
 EXPOSE 8080
 ENTRYPOINT [ "/usr/local/bin/opentelemetry-instrument", "python", "email_server.py" ]
