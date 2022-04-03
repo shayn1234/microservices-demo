@@ -44,10 +44,12 @@ spec:
         - name: DISABLE_PROFILER
           value: "1"
         readinessProbe:
+          failureThreshold: 30
           periodSeconds: 50
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:8080"]
         livenessProbe:
+          failureThreshold: 30
           periodSeconds: 50
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:8080"]
@@ -162,10 +164,12 @@ spec:
         ports:
         - containerPort: 8080
         readinessProbe:
+          failureThreshold: 30
           periodSeconds: 50
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:8080"]
         livenessProbe:
+          failureThreshold: 30
           periodSeconds: 50
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:8080"]
@@ -443,6 +447,7 @@ spec:
             command: ["/bin/grpc_health_probe", "-addr=:7070", "-rpc-timeout=5s"]
         livenessProbe:
           initialDelaySeconds: 15
+          failureThreshold: 30
           periodSeconds: 100
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:7070", "-rpc-timeout=5s"]
@@ -599,10 +604,12 @@ spec:
         # - name: JAEGER_SERVICE_ADDR
         #   value: "jaeger-collector:14268"
         readinessProbe:
+          failureThreshold: 30
           periodSeconds: 50
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:50051"]
         livenessProbe:
+          failureThreshold: 30
           periodSeconds: 50
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:50051"]
@@ -646,10 +653,12 @@ spec:
         ports:
         - containerPort: 6379
         readinessProbe:
+          failureThreshold: 30
           periodSeconds: 50
           tcpSocket:
             port: 6379
         livenessProbe:
+          failureThreshold: 30
           periodSeconds: 50
           tcpSocket:
             port: 6379
@@ -718,11 +727,13 @@ spec:
             memory: 300Mi
         readinessProbe:
           initialDelaySeconds: 20
+          failureThreshold: 30
           periodSeconds: 150
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:9555"]
         livenessProbe:
           initialDelaySeconds: 20
+          failureThreshold: 30
           periodSeconds: 150
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:9555"]
