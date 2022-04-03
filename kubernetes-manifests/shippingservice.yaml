@@ -45,6 +45,7 @@ spec:
         - name: ZIPKIN_SERVICE_ADDR
           value: "192.168.5.66:9411"
         readinessProbe:
+          failureThreshold: 30
           periodSeconds: 5
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:50051"]
