@@ -159,7 +159,7 @@ if __name__ == "__main__":
     zipkin_exporter = ZipkinExporter(
     # version=Protocol.V2
     # optional:
-    endpoint="http://192.168.5.66:9411/api/v2/spans",
+    endpoint="http://192.168.43.131:9411/api/v2/spans",
     # local_node_ipv4="192.168.0.1",
     # local_node_ipv6="2001:db8::c001",
     # local_node_port=31313,

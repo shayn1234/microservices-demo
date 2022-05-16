@@ -43,7 +43,7 @@ ENV PORT "8080"
 EXPOSE 8080
 
 ENV OTEL_TRACES_EXPORTER=zipkin_json
-ENV OTEL_EXPORTER_OTLP_ENDPOINT="http://192.168.5.66:9411/api/v2/spans"
+ENV OTEL_EXPORTER_OTLP_ENDPOINT="http://192.168.43.131:9411/api/v2/spans"
 ENV OTEL_RESOURCE_ATTRIBUTES="service.name=recommendationservice"
 
 ENTRYPOINT ["opentelemetry-instrument", "python", "/recommendationservice/recommendation_server.py"]
