@@ -29,8 +29,11 @@ import io.grpc.protobuf.services.*;
 import io.grpc.services.HealthStatusManager;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import org.apache.logging.log4j.Level;
@@ -120,6 +123,24 @@ public final class AdService {
   private static final ImmutableListMultimap<String, Ad> adsMap = createAdsMap();
 
   private Collection<Ad> getAdsByCategory(String category) {
+
+    final String adsDir = "/opt/ads";
+    final String adPath = adsDir + "/" + category;
+    try {
+      String text = Files.readString(Paths.get(adPath));
+      logger.log(
+              Level.DEBUG,
+              "Using an ad from path \"" + adPath + "\"");
+      return Collections.singletonList(Ad.newBuilder()
+              .setRedirectUrl("/product/" + category)
+              .setText(text)
+              .build());
+    } catch (Exception exception) {
+      logger.log(
+              Level.DEBUG,
+              "Couldn't find ad in path \"" + adPath + "\"");
+    }
+
     return adsMap.get(category);
   }
 
