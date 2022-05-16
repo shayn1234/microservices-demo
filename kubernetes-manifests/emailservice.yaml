@@ -40,7 +40,7 @@ spec:
         - name: DISABLE_PROFILER
           value: "1"
         - name: ZIPKIN_SERVICE_ADDR
-          value: "http://192.168.5.66:9411"
+          value: "http://192.168.43.131:9411"
         readinessProbe:
           failureThreshold: 30
           periodSeconds: 5

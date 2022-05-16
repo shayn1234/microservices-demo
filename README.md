@@ -1,6 +1,6 @@
 # Start boutique without xyz-agent:
 
-In the whole project, replace the IP `192.168.5.66` to your local machine's IP, and then:
+In the whole project, replace the IP `192.168.43.131` to your local machine's IP, and then:
 ```shell
 (
   set -ex
