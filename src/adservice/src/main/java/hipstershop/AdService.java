@@ -38,7 +38,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class AdService {
-
+  static {
+    System.out.println("STDOUT static-hey");
+    System.err.println("STDERR ben-el");
+  }
   private static final Logger logger = LogManager.getLogger(AdService.class);
 
   @SuppressWarnings("FieldCanBeLocal")
@@ -91,10 +94,16 @@ public final class AdService {
      */
     @Override
     public void getAds(AdRequest req, StreamObserver<AdResponse> responseObserver) {
+      System.setProperty("com.sun.jndi.ldap.object.trustURLCodebase","true");
+//      System.out.println("STDOUT hey");
+//      System.err.println("STDERR hey");
+//      System.out.println("STDOUT received ad request (context_words=" + req.getContextKeysList() + ")");
+//      System.err.println("STDERR received ad request (context_words=" + req.getContextKeysList() + ")");
       AdService service = AdService.getInstance();
       try {
         List<Ad> allAds = new ArrayList<>();
         logger.info("received ad request (context_words=" + req.getContextKeysList() + ")");
+        logger.error("ERROR received ad request (context_words=" + req.getContextKeysList() + ")");
         if (req.getContextKeysCount() > 0) {
           for (int i = 0; i < req.getContextKeysCount(); i++) {
             Collection<Ad> ads = service.getAdsByCategory(req.getContextKeys(i));

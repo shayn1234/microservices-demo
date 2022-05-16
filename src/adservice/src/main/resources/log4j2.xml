@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<Configuration status="WARN">
+<Configuration status="INFO">
   <Appenders>
     <Console name="STDOUT" target="SYSTEM_OUT">
 
@@ -25,12 +25,12 @@
            "traceSampled", and "timestamp" in the Stackdriver LogEntry
            (https://cloud.google.com/logging/docs/agent/configuration#special-fields). -->
 
-      <JsonLayout compact="true" eventEol="true">
-        <KeyValuePair key="logging.googleapis.com/trace" value="$${ctx:traceId}"/>
-        <KeyValuePair key="logging.googleapis.com/spanId" value="$${ctx:spanId}"/>
-        <KeyValuePair key="logging.googleapis.com/traceSampled" value="$${ctx:traceSampled}"/>
-        <KeyValuePair key="time" value="$${date:yyyy-MM-dd}T$${date:HH:mm:ss.SSS}Z"/>
-     </JsonLayout>
+<!--      <JsonLayout compact="true" eventEol="true">-->
+<!--        <KeyValuePair key="logging.googleapis.com/trace" value="$${ctx:traceId}"/>-->
+<!--        <KeyValuePair key="logging.googleapis.com/spanId" value="$${ctx:spanId}"/>-->
+<!--        <KeyValuePair key="logging.googleapis.com/traceSampled" value="$${ctx:traceSampled}"/>-->
+<!--        <KeyValuePair key="time" value="$${date:yyyy-MM-dd}T$${date:HH:mm:ss.SSS}Z"/>-->
+<!--     </JsonLayout>-->
 
     </Console>
     <File name="MyFile" fileName="/app.log">
@@ -40,9 +40,11 @@
     </File>
   </Appenders>
   <Loggers>
-    <Logger name="io.grpc.netty" level="INFO"/>
-    <Logger name="io.netty" level="INFO"/>
-    <Logger name="sun.net" level="INFO"/>
+    <Logger name="io.grpc.netty" level="TRACE"/>
+    <Logger name="io.netty" level="TRACE"/>
+    <Logger name="sun.net" level="TRACE"/>
+    <Logger name="zipkin2.reporter.okhttp3" level="TRACE"/>
+    <Logger name="okhttp3" level="TRACE"/>
     <Root level="TRACE">
       <AppenderRef ref="STDOUT"/>
       <AppenderRef ref="MyFile"/>

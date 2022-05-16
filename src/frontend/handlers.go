@@ -184,10 +184,16 @@ func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request)
 		Price *pb.Money
 	}{p, price}
 
+	categories := p.Categories
+	extraCategory := r.Header.Get("Extra-Category")
+	if extraCategory != "" {
+		categories = append(categories, extraCategory)
+	}
+
 	if err := templates.ExecuteTemplate(w, "product", map[string]interface{}{
 		"session_id":      sessionID(r),
 		"request_id":      r.Context().Value(ctxKeyRequestID{}),
-		"ad":              fe.chooseAd(r.Context(), p.Categories, log),
+		"ad":              fe.chooseAd(r.Context(), categories, log),
 		"user_currency":   currentCurrency(r),
 		"show_currency":   true,
 		"currencies":      currencies,
