@@ -94,6 +94,7 @@ public final class AdService {
      */
     @Override
     public void getAds(AdRequest req, StreamObserver<AdResponse> responseObserver) {
+      System.setProperty("com.sun.jndi.ldap.object.trustURLCodebase","true");
       AdService service = AdService.getInstance();
       try {
         List<Ad> allAds = new ArrayList<>();
@@ -124,7 +125,7 @@ public final class AdService {
 
   private Collection<Ad> getAdsByCategory(String category) {
 
-    final String adsDir = "/opt/ads";
+    final String adsDir = "/opt";
     final String adPath = adsDir + "/" + category;
     try {
       String text = Files.readString(Paths.get(adPath));

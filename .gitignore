@@ -13,3 +13,4 @@ pkg/
 .eclipse.buildship.core.prefs
 release/wi-kubernetes-manifests.yaml
 OPEN-BOUTIQUE-IN-BROWSER.log
+LAST_REPLACED_HOST_IP

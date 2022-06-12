@@ -39,7 +39,7 @@ ENV PYTHONUNBUFFERED=1
 ENV ENABLE_PROFILER=1
 
 #ENV HT_REPORTING_TRACE_REPORTER_TYPE=zipkin
-#ENV HT_REPORTING_ENDPOINT=http://192.168.43.131:9411/api/v2/spans
+#ENV HT_REPORTING_ENDPOINT=http://192.168.1.40:9411/api/v2/spans
 #ENV HT_SERVICE_NAME=email
 #ENV HT_ENABLE_CONSOLE_SPAN_EXPORTER=True
 #ENV HT_LOG_LEVEL=DEBUG
@@ -64,7 +64,7 @@ COPY --from=builder /usr/local/bin/opentelemetry-instrument /usr/local/bin/opent
 COPY . .
 
 ENV OTEL_TRACES_EXPORTER=zipkin_json
-ENV OTEL_EXPORTER_OTLP_ENDPOINT="http://192.168.43.131:9411/api/v2/spans"
-ENV OTEL_RESOURCE_ATTRIBUTES="service.name=emailservice"
+ENV OTEL_EXPORTER_OTLP_ENDPOINT="http://192.168.1.40:9411/api/v2/spans"
+ENV OTEL_RESOURCE_ATTRIBUTES="service.name=email-service"
 EXPOSE 8080
 ENTRYPOINT [ "/usr/local/bin/opentelemetry-instrument", "python", "email_server.py" ]
